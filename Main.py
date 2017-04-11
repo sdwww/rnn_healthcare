@@ -15,4 +15,5 @@ if __name__ == '__main__':
     DBOptions.create_index_jbbm_drug(cursor=cursor,con=con)
     cursor.close()
     con.close()
+    print()
     print('总时间:', time.clock() - start)
