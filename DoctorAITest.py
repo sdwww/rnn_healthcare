@@ -1,5 +1,6 @@
 import numpy as np
-from keras.models import Model, load_model
+from keras.models import load_model
+from sklearn.metrics import roc_auc_score
 
 
 def load_test_data(month):
@@ -11,7 +12,7 @@ def load_test_data(month):
     return dataset_jbbm_test, dataset_drug_test, label_jbbm_test, label_drug_test, label_sick_test
 
 
-def recallTop(y_true, y_pred, rank=None):
+def recall_top(y_true, y_pred, rank=None):
     if rank is None:
         rank = [5, 10, 15, ]
     recall = list()
@@ -30,23 +31,29 @@ def recallTop(y_true, y_pred, rank=None):
     return (np.array(recall)).mean(axis=0).tolist()
 
 
-def calculate_r_squared(trueVec, predVec):
-    trueVec = np.array(trueVec)
-    predVec = np.array(predVec)
-    mean_duration = np.mean(trueVec)
+def calculate_r_squared(true_vec, pred_vec):
+    true_vec = np.array(true_vec)
+    pred_vec = np.array(pred_vec)
+    mean_duration = np.mean(true_vec)
 
-    numerator = ((trueVec - predVec) ** 2).sum()
-    denominator = ((trueVec - mean_duration) ** 2).sum()
+    numerator = ((true_vec - pred_vec) ** 2).sum()
+    denominator = ((true_vec - mean_duration) ** 2).sum()
     return 1.0 - (numerator / denominator)
 
 
-def test_model(filename,month):
+def calculate_auc(true_vec, pred_vec):
+    auc = roc_auc_score(true_vec, pred_vec)
+    return auc
+
+
+def test_model(filename, month):
     dataset_jbbm_test, dataset_drug_test, label_jbbm_test, label_drug_test, label_sick_test = load_test_data(month)
-    model = load_model('./data_h5/'+filename)
-    pred_jbbm_test, pred_drug_test,pred_sick_test = model.predict(x=[dataset_jbbm_test, dataset_drug_test])
+    model = load_model('./data_h5/' + filename)
+    pred_jbbm_test, pred_drug_test, pred_sick_test = model.predict(x=[dataset_jbbm_test, dataset_drug_test])
     print('前十个人的预测情况和患病情况分别为')
     for i in range(10):
         print(pred_sick_test[i], label_sick_test[i])
     # print("top5,top10,top15 recall分别为", recallTop(label_jbbm_test, pred_jbbm_test))
     # print("top5,top10,top15 recall分别为", recallTop(label_drug_test, pred_drug_test))
     print(calculate_r_squared(label_sick_test, pred_sick_test))
+    print(calculate_auc(label_sick_test, pred_sick_test))

@@ -7,6 +7,8 @@ import FileOptions
 import CreateDataset
 import DoctorAITrain
 import DoctorAITest
+import BaselineTrain
+import BaselineTest
 import re
 
 if __name__ == '__main__':
@@ -19,10 +21,39 @@ if __name__ == '__main__':
     # cursor.close()
     # con.close()
 
-    # #训练模型
-    # DoctorAITrain.train_model(month=3)
+    # # 训练RNN模型
+    # month_list = [3, 6, 9, 12]
+    # for i in month_list:
+    #     DoctorAITrain.train_model(month=i, max_epochs=20, batch_size=64)
 
-    #测试模型
-    DoctorAITest.test_model('model_10epochs.h5',month=3)
+    # # 测试RNN模型
+    # month_list = [3, 6, 9, 12]
+    # for i in month_list:
+    #     DoctorAITest.test_model('model_20epochs_'+str(i)+'month.h5', month=3)
+
+    # # 训练逻辑回归模型
+    # month_list = [3, 6, 9, 12]
+    # for i in month_list:
+    #     BaselineTrain.train_lr(month=i, max_epochs=20, batch_size=64)
+    #
+    # # 测试逻辑回归模型
+    # month_list = [3, 6, 9, 12]
+    # for i in month_list:
+    #     BaselineTest.test_lr('lr_20epochs_'+str(i)+'month.h5', month=3)
+
+    # # 训练多层感知机模型
+    # month_list = [3, 6, 9, 12]
+    # for i in month_list:
+    #     BaselineTrain.train_mlp(month=i, max_epochs=20, batch_size=64)
+    #
+    # # 测试多层感知机模型
+    # month_list = [3, 6, 9, 12]
+    # for i in month_list:
+    #     BaselineTest.test_mlp('mlp_20epochs_'+str(i)+'month.h5', month=3)
+
+    # 训练xgboost模型
+    month_list = [3, 6, 9, 12]
+    for i in month_list:
+        BaselineTrain.train_xgb(month=i)
 
     print('总时间:', time.clock() - start)
