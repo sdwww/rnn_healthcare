@@ -10,12 +10,12 @@ def load_train_data(month):
     dataset_jbbm_train = np.load('./data_npz/dataset_jbbm_train.npz')["arr_0"]
     dataset_drug_train = np.load('./data_npz/dataset_drug_nocost_train.npz')["arr_0"]
     label_jbbm_train = np.load('./data_npz/label_jbbm_train_' + str(month) + 'month.npz')["arr_0"]
-    label_drug_train = np.load('./data_npz/label_nocost_drug_train_' + str(month) + 'month.npz')["arr_0"]
+    label_drug_train = np.load('./data_npz/label_drug_nocost_train_' + str(month) + 'month.npz')["arr_0"]
     label_sick_train = np.load('./data_npz/label_sick_train_' + str(month) + 'month.npz')["arr_0"]
     return dataset_jbbm_train, dataset_drug_train, label_jbbm_train, label_drug_train, label_sick_train
 
 
-def doctorAI_train(
+def train_model(
         embSize=500,
         hiddenSize=[200, 200],
         batchSize=100,

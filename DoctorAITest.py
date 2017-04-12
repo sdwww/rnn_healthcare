@@ -39,7 +39,7 @@ def calculate_r_squared(trueVec, predVec):
     return 1.0 - (numerator / denominator)
 
 
-def doctorAI_test(filename):
+def test_model(filename):
     dataset_x_test, dataset_t_test, label_y_test, label_t_test = load_test_data()
     model = load_model(filename)
     pred_y_test, pred_t_test = model.predict(x=[dataset_x_test, dataset_t_test])
