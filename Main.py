@@ -20,9 +20,9 @@ if __name__ == '__main__':
     # con.close()
 
     # #训练模型
-    # DoctorAITrain.train_model()
+    # DoctorAITrain.train_model(month=3)
 
     #测试模型
-    DoctorAITest.test_model()
+    DoctorAITest.test_model('model_10epochs.h5',month=3)
 
     print('总时间:', time.clock() - start)
