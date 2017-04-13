@@ -9,11 +9,11 @@ import DoctorAITrain
 import DoctorAITest
 import BaselineTrain
 import BaselineTest
+import PlotContent
 import re
 
 if __name__ == '__main__':
     start = time.clock()
-
     # # 连接数据库
     # con = DBOptions.connect()
     # cursor = con.cursor()
@@ -46,14 +46,17 @@ if __name__ == '__main__':
     # for i in month_list:
     #     BaselineTrain.train_mlp(month=i, max_epochs=20, batch_size=64)
     #
-    # # 测试多层感知机模型
+    # 测试多层感知机模型
     # month_list = [3, 6, 9, 12]
     # for i in month_list:
     #     BaselineTest.test_mlp('mlp_20epochs_'+str(i)+'month.h5', month=3)
 
-    # 训练xgboost模型
-    month_list = [3, 6, 9, 12]
-    for i in month_list:
-        BaselineTrain.train_xgb(month=i)
+    # # 训练xgboost模型
+    # month_list = [3, 6, 9, 12]
+    # for i in month_list:
+    #     BaselineTrain.train_xgb(month=i)
+
+    # 绘制疾病预测结果
+    PlotContent.plot_sick_results()
 
     print('总时间:', time.clock() - start)
