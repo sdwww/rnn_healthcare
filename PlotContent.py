@@ -11,7 +11,7 @@ def plot_sick_results():
     # # 测试RNN模型
     month_list = [3, 6, 9, 12]
     for i in month_list:
-        model_result = DoctorAITest.test_model('model_20epochs_' + str(i) + 'month.h5', month=3)
+        model_result = DoctorAITest.test_model_sick('model_20epochs_' + str(i) + 'month.h5', month=3)
         model_results.append(model_result)
     # 测试逻辑回归模型
     for i in month_list:

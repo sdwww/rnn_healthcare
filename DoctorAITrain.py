@@ -38,7 +38,7 @@ def train_model(
     model.compile(optimizer='rmsprop',
                   loss={'jbbm_output': 'binary_crossentropy', 'drug_output': 'binary_crossentropy',
                         'sick_output': 'binary_crossentropy'},
-                  loss_weights={'jbbm_output': 1, 'drug_output': 1, 'sick_output': 1})
+                  loss_weights={'jbbm_output': 1, 'drug_output': 1, 'sick_output': 1},metrics=[''])
 
     # 模型可视化
     plot_model(model, to_file='./data_png/rnn_model.png', show_shapes=True)

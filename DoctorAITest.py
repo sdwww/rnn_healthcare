@@ -14,7 +14,7 @@ def load_test_data(month):
 
 def recall_top(y_true, y_pred, rank=None):
     if rank is None:
-        rank = [5, 10, 15, ]
+        rank = [5, 10, 15]
     recall = list()
     for i in range(len(y_pred)):
         thisOne = list()
@@ -64,7 +64,7 @@ def calculate_precision(true_vec, pred_vec):
     return precision
 
 
-def test_model(filename, month):
+def test_model_sick(filename, month):
     dataset_jbbm_test, dataset_drug_test, label_jbbm_test, label_drug_test, label_sick_test = load_test_data(month)
     model = load_model('./data_h5/' + filename)
     pred_jbbm_test, pred_drug_test, pred_sick_test = model.predict(x=[dataset_jbbm_test, dataset_drug_test])
@@ -79,3 +79,10 @@ def test_model(filename, month):
     precision = calculate_precision(label_sick_test, pred_sick_test)
     recall = calculate_recall(label_sick_test, pred_sick_test)
     return [auc, acc, precision, recall]
+
+def test_model_jbbm(filename, month):
+    dataset_jbbm_test, dataset_drug_test, label_jbbm_test, label_drug_test, label_sick_test = load_test_data(month)
+    model = load_model('./data_h5/' + filename)
+    pred_jbbm_test, pred_drug_test, pred_sick_test = model.predict(x=[dataset_jbbm_test, dataset_drug_test])
+    print("top5,top10,top15 recall分别为", recall_top(label_jbbm_test, pred_jbbm_test))
+    print(calculate_r_squared(label_sick_test, pred_sick_test))
