@@ -14,7 +14,7 @@ def load_test_data(month):
 
 def recall_top(y_true, y_pred, rank=None):
     if rank is None:
-        rank = [5, 10, 15]
+        rank = [1, 2, 3]
     recall = list()
     for i in range(len(y_pred)):
         thisOne = list()
@@ -22,11 +22,33 @@ def recall_top(y_true, y_pred, rank=None):
         for j in y_true[i]:
             if j == 1:
                 count += 1
-        codes = np.argsort(y_true[i])
-        tops = np.argsort(y_pred[i])
-        for rk in rank:
-            thisOne.append(len(set(codes[len(codes) - count:]).intersection(set(tops[len(tops) - rk:]))) * 1.0 / count)
-        recall.append(thisOne)
+        if count:
+            codes = np.argsort(y_true[i])
+            tops = np.argsort(y_pred[i])
+            for rk in rank:
+                thisOne.append(
+                    len(set(codes[len(codes) - count:]).intersection(set(tops[len(tops) - rk:]))) * 1.0 / count)
+            recall.append(thisOne)
+
+    return (np.array(recall)).mean(axis=0).tolist()
+
+
+def precision_top(y_true, y_pred, rank=None):
+    if rank is None:
+        rank = [1, 2, 3]
+    recall = list()
+    for i in range(len(y_pred)):
+        thisOne = list()
+        count = 0
+        for j in y_true[i]:
+            if j == 1:
+                count += 1
+        if count:
+            codes = np.argsort(y_true[i])
+            tops = np.argsort(y_pred[i])
+            for rk in rank:
+                thisOne.append(len(set(codes[len(codes) - count:]).intersection(set(tops[len(tops) - rk:]))) * 1.0 / rk)
+            recall.append(thisOne)
 
     return (np.array(recall)).mean(axis=0).tolist()
 
@@ -80,9 +102,11 @@ def test_model_sick(filename, month):
     recall = calculate_recall(label_sick_test, pred_sick_test)
     return [auc, acc, precision, recall]
 
+
 def test_model_jbbm(filename, month):
     dataset_jbbm_test, dataset_drug_test, label_jbbm_test, label_drug_test, label_sick_test = load_test_data(month)
     model = load_model('./data_h5/' + filename)
     pred_jbbm_test, pred_drug_test, pred_sick_test = model.predict(x=[dataset_jbbm_test, dataset_drug_test])
-    print("top5,top10,top15 recall分别为", recall_top(label_jbbm_test, pred_jbbm_test))
-    print(calculate_r_squared(label_sick_test, pred_sick_test))
+    print("top1,top2,top3 recall分别为", recall_top(label_jbbm_test, pred_jbbm_test))
+    print("top1,top2,top3 precisoin分别为", precision_top(label_jbbm_test, pred_jbbm_test))
+    print(calculate_r_squared(label_jbbm_test, pred_jbbm_test))

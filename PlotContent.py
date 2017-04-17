@@ -15,12 +15,12 @@ def plot_sick_results():
         model_results.append(model_result)
     # 测试逻辑回归模型
     for i in month_list:
-        lr_result = BaselineTest.test_lr('lr_20epochs_' + str(i) + 'month.h5', month=3)
+        lr_result = BaselineTest.test_lr_sick('lr_20epochs_' + str(i) + 'month.h5', month=3)
         lr_results.append(lr_result)
 
     # 测试多层感知机模型
     for i in month_list:
-        mlp_result = BaselineTest.test_mlp('mlp_20epochs_' + str(i) + 'month.h5', month=3)
+        mlp_result = BaselineTest.test_mlp_sick('mlp_20epochs_' + str(i) + 'month.h5', month=3)
         mlp_results.append(mlp_result)
     model_results=np.asarray(model_results)
     lr_results=np.asarray(lr_results)

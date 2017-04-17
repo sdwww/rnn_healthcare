@@ -11,17 +11,17 @@ drug_categ_num = 135
 
 # 创建诊断数据集
 def create_dataset_jbbm(cursor):
-    # sql = 'select grbh_index,xh_index,jbbm_index from DATA_ANALYSIS_JBBM where XH_INDEX!=0'
-    # all_info = DBOptions.getSQL(sql, cursor=cursor)
-    # dataset_jbbm = np.zeros((patient_num, visit_num, jbbm_num), dtype='int32')
-    # print('诊断数据集大小：', dataset_jbbm.shape)
-    # for i in all_info:
-    #     if i[1] < visit_num:
-    #         dataset_jbbm[i[0], -i[1], i[2]] = 1
-    # dataset_jbbm_train = dataset_jbbm[:int(patient_num * 0.85)]
-    # dataset_jbbm_test = dataset_jbbm[int(patient_num * 0.85):]
-    # np.savez_compressed('./data_npz/dataset_jbbm_train.npz', dataset_jbbm_train)
-    # np.savez_compressed('./data_npz/dataset_jbbm_test.npz', dataset_jbbm_test)
+    sql = 'select grbh_index,xh_index,jbbm_index from DATA_ANALYSIS_JBBM where XH_INDEX!=0'
+    all_info = DBOptions.getSQL(sql, cursor=cursor)
+    dataset_jbbm = np.zeros((patient_num, visit_num, jbbm_num), dtype='int32')
+    print('诊断数据集大小：', dataset_jbbm.shape)
+    for i in all_info:
+        if i[1] < visit_num:
+            dataset_jbbm[i[0], -i[1], i[2]] = 1
+    dataset_jbbm_train = dataset_jbbm[:int(patient_num * 0.85)]
+    dataset_jbbm_test = dataset_jbbm[int(patient_num * 0.85):]
+    np.savez_compressed('./data_npz/dataset_jbbm_train.npz', dataset_jbbm_train)
+    np.savez_compressed('./data_npz/dataset_jbbm_test.npz', dataset_jbbm_test)
 
     time_list = ['2014-10-29', '2015-01-29', '2015-04-29', '2015-07-29']
     for i in range(len(time_list)):
