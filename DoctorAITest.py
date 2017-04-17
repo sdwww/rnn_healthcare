@@ -106,6 +106,7 @@ def test_model_sick(filename, month):
 def test_model_jbbm(filename, month):
     dataset_jbbm_test, dataset_drug_test, label_jbbm_test, label_drug_test, label_sick_test = load_test_data(month)
     model = load_model('./data_h5/' + filename)
+    print(model.history)
     pred_jbbm_test, pred_drug_test, pred_sick_test = model.predict(x=[dataset_jbbm_test, dataset_drug_test])
     print("top1,top2,top3 recall分别为", recall_top(label_jbbm_test, pred_jbbm_test))
     print("top1,top2,top3 precisoin分别为", precision_top(label_jbbm_test, pred_jbbm_test))
