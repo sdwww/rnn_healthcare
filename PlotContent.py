@@ -11,16 +11,16 @@ def plot_sick_results():
     # # 测试RNN模型
     month_list = [3, 6, 9, 12]
     for i in month_list:
-        model_result = DoctorAITest.test_model_sick('model_20epochs_' + str(i) + 'month.h5', month=3)
+        model_result = DoctorAITest.test_model_sick('rnn1_500emb_[300]hidden__gru_20epochs_' + str(i) + 'month.h5', month=3)
         model_results.append(model_result)
     # 测试逻辑回归模型
     for i in month_list:
-        lr_result = BaselineTest.test_lr_sick('lr_20epochs_' + str(i) + 'month.h5', month=3)
+        lr_result = BaselineTest.test_lr_sick('lr_10epochs_' + str(i) + 'month.h5', month=3)
         lr_results.append(lr_result)
 
     # 测试多层感知机模型
     for i in month_list:
-        mlp_result = BaselineTest.test_mlp_sick('mlp_20epochs_' + str(i) + 'month.h5', month=3)
+        mlp_result = BaselineTest.test_mlp_sick('mlp_10epochs_' + str(i) + 'month.h5', month=3)
         mlp_results.append(mlp_result)
     model_results=np.asarray(model_results)
     lr_results=np.asarray(lr_results)
@@ -77,3 +77,19 @@ def plot_sick_results():
     plt.grid()
     plt.savefig('./data_png/sick_recall.png',dpi=300)
     plt.close()
+
+
+def plot_jbbm_num():
+    month_list = [3, 6, 9, 12]
+    for month in month_list:
+        label_jbbm_train = np.load('./data_npz/label_jbbm_train_' + str(month) + 'month.npz')["arr_0"]
+        label_jbbm_num=np.sum(label_jbbm_train,axis=1)
+        max_num=np.max(label_jbbm_num)
+        min_num=np.min(label_jbbm_num)
+        jbbm_count=np.zeros([max_num-min_num+1])
+        for i in label_jbbm_num:
+            jbbm_count[i]+=1
+        print(jbbm_count)
+        plt.bar(range(len(jbbm_count)), jbbm_count)
+        plt.savefig('./data_png/jbbm_num'+str(month)+'month.png',dpi=300)
+        plt.close()

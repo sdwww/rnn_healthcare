@@ -17,9 +17,10 @@ def change_to_one_zero(dataset):
 
 
 def load_train_data(month):
-    dataset_jbbm_train = change_to_one_zero(np.sum(np.load('./data_npz/dataset_jbbm_train.npz')["arr_0"], axis=1))
-    dataset_drug_train = change_to_one_zero(
-        np.sum(np.load('./data_npz/dataset_drug_nocost_train.npz')["arr_0"], axis=1))
+    dataset_jbbm_train = np.load('./data_npz/dataset_jbbm_train.npz')["arr_0"][:, -1, :] \
+        .reshape(int(CreateDataset.patient_num * 0.85), CreateDataset.jbbm_num)
+    dataset_drug_train = np.load('./data_npz/dataset_drug_nocost_train.npz')["arr_0"][:, -1, :] \
+        .reshape(int(CreateDataset.patient_num * 0.85), CreateDataset.drug_num)
     label_jbbm_train = np.load('./data_npz/label_jbbm_train_' + str(month) + 'month.npz')["arr_0"]
     label_drug_train = np.load('./data_npz/label_drug_nocost_train_' + str(month) + 'month.npz')["arr_0"]
     label_sick_train = np.load('./data_npz/label_sick_train_' + str(month) + 'month.npz')["arr_0"]
@@ -35,7 +36,7 @@ def train_lr(month=3, max_epochs=10, batch_size=100):
     model = Model(inputs=[jbbm_input, drug_input], outputs=[jbbm_output, sick_output])
     model.compile(optimizer='rmsprop',
                   loss={'sick_output': 'binary_crossentropy', 'jbbm_output': 'binary_crossentropy'},
-                  loss_weights={'sick_output': 1, 'jbbm_output': 1})
+                  loss_weights={'sick_output': 1, 'jbbm_output': 50})
 
     # 模型可视化
     plot_model(model, to_file='./data_png/lr_model.png', show_shapes=True)
@@ -51,13 +52,13 @@ def train_mlp(month=3, max_epochs=10, batch_size=100):
     jbbm_input = Input(shape=(CreateDataset.jbbm_num,), name='jbbm_input')
     drug_input = Input(shape=(CreateDataset.drug_num,), name='drug_input')
     code_input = concatenate([jbbm_input, drug_input])
-    hidden_layer = Dense(200)(code_input)
+    hidden_layer = Dense(300)(code_input)
     jbbm_output = Dense(CreateDataset.jbbm_categ_num, activation='softmax', name='jbbm_output')(hidden_layer)
     sick_output = Dense(1, activation='sigmoid', name='sick_output')(hidden_layer)
     model = Model(inputs=[jbbm_input, drug_input], outputs=[jbbm_output, sick_output])
     model.compile(optimizer='rmsprop',
                   loss={'sick_output': 'binary_crossentropy', 'jbbm_output': 'binary_crossentropy'},
-                  loss_weights={'sick_output': 1, 'jbbm_output': 1})
+                  loss_weights={'sick_output': 1, 'jbbm_output': 50})
 
     # 模型可视化
     plot_model(model, to_file='./data_png/mlp_model.png', show_shapes=True)

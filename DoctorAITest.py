@@ -89,7 +89,7 @@ def calculate_precision(true_vec, pred_vec):
 def test_model_sick(filename, month):
     dataset_jbbm_test, dataset_drug_test, label_jbbm_test, label_drug_test, label_sick_test = load_test_data(month)
     model = load_model('./data_h5/' + filename)
-    pred_jbbm_test, pred_drug_test, pred_sick_test = model.predict(x=[dataset_jbbm_test, dataset_drug_test])
+    pred_jbbm_test, pred_sick_test = model.predict(x=[dataset_jbbm_test, dataset_drug_test])
     # print('前十个人的预测情况和患病情况分别为')
     # for i in range(10):
     #     print(pred_sick_test[i], label_sick_test[i])
@@ -106,8 +106,8 @@ def test_model_sick(filename, month):
 def test_model_jbbm(filename, month):
     dataset_jbbm_test, dataset_drug_test, label_jbbm_test, label_drug_test, label_sick_test = load_test_data(month)
     model = load_model('./data_h5/' + filename)
-    print(model.history)
-    pred_jbbm_test, pred_drug_test, pred_sick_test = model.predict(x=[dataset_jbbm_test, dataset_drug_test])
-    print("top1,top2,top3 recall分别为", recall_top(label_jbbm_test, pred_jbbm_test))
-    print("top1,top2,top3 precisoin分别为", precision_top(label_jbbm_test, pred_jbbm_test))
-    print(calculate_r_squared(label_jbbm_test, pred_jbbm_test))
+    pred_jbbm_test, pred_sick_test = model.predict(x=[dataset_jbbm_test, dataset_drug_test])
+    top1_recall,top2_recall,top3_recall=recall_top(label_jbbm_test, pred_jbbm_test)
+    top1_pre,top2_pre,top3_pre=precision_top(label_jbbm_test, pred_jbbm_test)
+    r2_jbbm=calculate_r_squared(label_jbbm_test, pred_jbbm_test)
+    return [top1_recall,top2_recall,top3_recall,top1_pre,top2_pre,top3_pre,r2_jbbm]

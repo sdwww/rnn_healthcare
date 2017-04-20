@@ -2,13 +2,18 @@ import numpy as np
 from keras.models import load_model
 from sklearn.metrics import roc_auc_score, accuracy_score, recall_score, precision_score
 import BaselineTrain
+import CreateDataset
 
 
 def load_test_data(month):
-    dataset_jbbm_test = BaselineTrain.change_to_one_zero(np.sum(
-        np.load('./data_npz/dataset_jbbm_test.npz')["arr_0"], axis=1))
-    dataset_drug_test = BaselineTrain.change_to_one_zero(np.sum(
-        np.load('./data_npz/dataset_drug_nocost_test.npz')["arr_0"], axis=1))
+    # dataset_jbbm_test = BaselineTrain.change_to_one_zero(np.sum(
+    #     np.load('./data_npz/dataset_jbbm_test.npz')["arr_0"], axis=1))
+    # dataset_drug_test = BaselineTrain.change_to_one_zero(np.sum(
+    #     np.load('./data_npz/dataset_drug_nocost_test.npz')["arr_0"], axis=1))
+    dataset_jbbm_test = np.load('./data_npz/dataset_jbbm_test.npz')["arr_0"][:, -1, :] \
+        .reshape(int(CreateDataset.patient_num * 0.15 + 1), CreateDataset.jbbm_num)
+    dataset_drug_test = np.load('./data_npz/dataset_drug_nocost_test.npz')["arr_0"][:, -1, :] \
+        .reshape(int(CreateDataset.patient_num * 0.15 + 1), CreateDataset.drug_num)
     label_jbbm_test = np.load('./data_npz/label_jbbm_test_' + str(month) + 'month.npz')["arr_0"]
     label_drug_test = np.load('./data_npz/label_drug_nocost_test_' + str(month) + 'month.npz')["arr_0"]
     label_sick_test = np.load('./data_npz/label_sick_test_' + str(month) + 'month.npz')["arr_0"]
@@ -55,6 +60,7 @@ def precision_top(y_true, y_pred, rank=None):
 
     return (np.array(recall)).mean(axis=0).tolist()
 
+
 def calculate_r_squared(true_vec, pred_vec):
     true_vec = np.array(true_vec)
     pred_vec = np.array(pred_vec)
@@ -88,11 +94,10 @@ def calculate_precision(true_vec, pred_vec):
     return precision
 
 
-
 def test_lr_sick(filename, month):
     dataset_jbbm_test, dataset_drug_test, label_jbbm_test, label_drug_test, label_sick_test = load_test_data(month)
     model = load_model('./data_h5/' + filename)
-    pred_jbbm_test,pred_sick_test = model.predict(x=[dataset_jbbm_test, dataset_drug_test])
+    pred_jbbm_test, pred_sick_test = model.predict(x=[dataset_jbbm_test, dataset_drug_test])
     # print('前十个人的预测情况和患病情况分别为')
     # for i in range(10):
     #     print(pred_sick_test[i], label_sick_test[i])
@@ -108,7 +113,7 @@ def test_lr_sick(filename, month):
 def test_mlp_sick(filename, month):
     dataset_jbbm_test, dataset_drug_test, label_jbbm_test, label_drug_test, label_sick_test = load_test_data(month)
     model = load_model('./data_h5/' + filename)
-    pred_jbbm_test,pred_sick_test = model.predict(x=[dataset_jbbm_test, dataset_drug_test])
+    pred_jbbm_test, pred_sick_test = model.predict(x=[dataset_jbbm_test, dataset_drug_test])
     # print('前十个人的预测情况和患病情况分别为')
     # for i in range(10):
     #     print(pred_sick_test[i], label_sick_test[i])
@@ -120,10 +125,11 @@ def test_mlp_sick(filename, month):
     recall = calculate_recall(label_sick_test, pred_sick_test)
     return [auc, acc, precision, recall]
 
+
 def test_lr_jbbm(filename, month):
     dataset_jbbm_test, dataset_drug_test, label_jbbm_test, label_drug_test, label_sick_test = load_test_data(month)
     model = load_model('./data_h5/' + filename)
-    pred_jbbm_test,pred_sick_test = model.predict(x=[dataset_jbbm_test, dataset_drug_test])
+    pred_jbbm_test, pred_sick_test = model.predict(x=[dataset_jbbm_test, dataset_drug_test])
     print("top1,top2,top3 recall分别为", recall_top(label_jbbm_test, pred_jbbm_test))
     print("top1,top2,top3 precisoin分别为", precision_top(label_jbbm_test, pred_jbbm_test))
     print(calculate_r_squared(label_jbbm_test, pred_jbbm_test))
@@ -132,7 +138,7 @@ def test_lr_jbbm(filename, month):
 def test_mlp_jbbm(filename, month):
     dataset_jbbm_test, dataset_drug_test, label_jbbm_test, label_drug_test, label_sick_test = load_test_data(month)
     model = load_model('./data_h5/' + filename)
-    pred_jbbm_test,pred_sick_test = model.predict(x=[dataset_jbbm_test, dataset_drug_test])
+    pred_jbbm_test, pred_sick_test = model.predict(x=[dataset_jbbm_test, dataset_drug_test])
     print("top1,top2,top3 recall分别为", recall_top(label_jbbm_test, pred_jbbm_test))
     print("top1,top2,top3 precisoin分别为", precision_top(label_jbbm_test, pred_jbbm_test))
     print(calculate_r_squared(label_jbbm_test, pred_jbbm_test))
