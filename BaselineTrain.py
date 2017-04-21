@@ -22,9 +22,9 @@ def load_train_data(month):
     dataset_drug_train = np.load('./data_npz/dataset_drug_nocost_train.npz')["arr_0"][:, -1, :] \
         .reshape(int(CreateDataset.patient_num * 0.85), CreateDataset.drug_num)
     label_jbbm_train = np.load('./data_npz/label_jbbm_train_' + str(month) + 'month.npz')["arr_0"]
-    label_drug_train = np.load('./data_npz/label_drug_nocost_train_' + str(month) + 'month.npz')["arr_0"]
+    # label_drug_train = np.load('./data_npz/label_drug_nocost_train_' + str(month) + 'month.npz')["arr_0"]
     label_sick_train = np.load('./data_npz/label_sick_train_' + str(month) + 'month.npz')["arr_0"]
-    return dataset_jbbm_train, dataset_drug_train, label_jbbm_train, label_drug_train, label_sick_train
+    return dataset_jbbm_train, dataset_drug_train, label_jbbm_train, label_sick_train
 
 
 def train_lr(month=3, max_epochs=10, batch_size=100):
@@ -36,12 +36,12 @@ def train_lr(month=3, max_epochs=10, batch_size=100):
     model = Model(inputs=[jbbm_input, drug_input], outputs=[jbbm_output, sick_output])
     model.compile(optimizer='rmsprop',
                   loss={'sick_output': 'binary_crossentropy', 'jbbm_output': 'binary_crossentropy'},
-                  loss_weights={'sick_output': 1, 'jbbm_output': 50})
+                  loss_weights={'sick_output': 1, 'jbbm_output': 100})
 
     # 模型可视化
     plot_model(model, to_file='./data_png/lr_model.png', show_shapes=True)
 
-    dataset_jbbm_train, dataset_drug_train, label_jbbm_train, label_drug_train, label_sick_train = load_train_data(
+    dataset_jbbm_train, dataset_drug_train, label_jbbm_train, label_sick_train = load_train_data(
         month)
     model.fit(x=[dataset_jbbm_train, dataset_drug_train], y=[label_jbbm_train, label_sick_train],
               epochs=max_epochs, batch_size=batch_size, validation_split=0.2)
@@ -58,12 +58,12 @@ def train_mlp(month=3, max_epochs=10, batch_size=100):
     model = Model(inputs=[jbbm_input, drug_input], outputs=[jbbm_output, sick_output])
     model.compile(optimizer='rmsprop',
                   loss={'sick_output': 'binary_crossentropy', 'jbbm_output': 'binary_crossentropy'},
-                  loss_weights={'sick_output': 1, 'jbbm_output': 50})
+                  loss_weights={'sick_output': 1, 'jbbm_output': 100})
 
     # 模型可视化
     plot_model(model, to_file='./data_png/mlp_model.png', show_shapes=True)
 
-    dataset_jbbm_train, dataset_drug_train, label_jbbm_train, label_drug_train, label_sick_train = load_train_data(
+    dataset_jbbm_train, dataset_drug_train, label_jbbm_train, label_sick_train = load_train_data(
         month)
     model.fit(x=[dataset_jbbm_train, dataset_drug_train], y=[label_jbbm_train, label_sick_train],
               epochs=max_epochs, batch_size=batch_size, validation_split=0.2)

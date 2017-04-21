@@ -7,9 +7,9 @@ def load_test_data(month):
     dataset_jbbm_test = np.load('./data_npz/dataset_jbbm_test.npz')["arr_0"]
     dataset_drug_test = np.load('./data_npz/dataset_drug_nocost_test.npz')["arr_0"]
     label_jbbm_test = np.load('./data_npz/label_jbbm_test_' + str(month) + 'month.npz')["arr_0"]
-    label_drug_test = np.load('./data_npz/label_drug_nocost_test_' + str(month) + 'month.npz')["arr_0"]
+    #label_drug_test = np.load('./data_npz/label_drug_nocost_test_' + str(month) + 'month.npz')["arr_0"]
     label_sick_test = np.load('./data_npz/label_sick_test_' + str(month) + 'month.npz')["arr_0"]
-    return dataset_jbbm_test, dataset_drug_test, label_jbbm_test, label_drug_test, label_sick_test
+    return dataset_jbbm_test, dataset_drug_test, label_jbbm_test, label_sick_test
 
 
 def recall_top(y_true, y_pred, rank=None):
@@ -36,7 +36,7 @@ def recall_top(y_true, y_pred, rank=None):
 def precision_top(y_true, y_pred, rank=None):
     if rank is None:
         rank = [1, 2, 3]
-    recall = list()
+    pre = list()
     for i in range(len(y_pred)):
         thisOne = list()
         count = 0
@@ -47,10 +47,13 @@ def precision_top(y_true, y_pred, rank=None):
             codes = np.argsort(y_true[i])
             tops = np.argsort(y_pred[i])
             for rk in rank:
-                thisOne.append(len(set(codes[len(codes) - count:]).intersection(set(tops[len(tops) - rk:]))) * 1.0 / rk)
-            recall.append(thisOne)
+                if len(set(codes[len(codes) - count:]).intersection(set(tops[len(tops) - rk:])))>=1:
+                    thisOne.append(1)
+                else:
+                    thisOne.append(0)
+            pre.append(thisOne)
 
-    return (np.array(recall)).mean(axis=0).tolist()
+    return (np.array(pre)).mean(axis=0).tolist()
 
 
 def calculate_r_squared(true_vec, pred_vec):
@@ -87,7 +90,7 @@ def calculate_precision(true_vec, pred_vec):
 
 
 def test_model_sick(filename, month):
-    dataset_jbbm_test, dataset_drug_test, label_jbbm_test, label_drug_test, label_sick_test = load_test_data(month)
+    dataset_jbbm_test, dataset_drug_test, label_jbbm_test, label_sick_test = load_test_data(month)
     model = load_model('./data_h5/' + filename)
     pred_jbbm_test, pred_sick_test = model.predict(x=[dataset_jbbm_test, dataset_drug_test])
     # print('前十个人的预测情况和患病情况分别为')
@@ -104,10 +107,10 @@ def test_model_sick(filename, month):
 
 
 def test_model_jbbm(filename, month):
-    dataset_jbbm_test, dataset_drug_test, label_jbbm_test, label_drug_test, label_sick_test = load_test_data(month)
+    dataset_jbbm_test, dataset_drug_test, label_jbbm_test,  label_sick_test = load_test_data(month)
     model = load_model('./data_h5/' + filename)
     pred_jbbm_test, pred_sick_test = model.predict(x=[dataset_jbbm_test, dataset_drug_test])
-    top1_recall,top2_recall,top3_recall=recall_top(label_jbbm_test, pred_jbbm_test)
+    #top1_recall,top2_recall,top3_recall=recall_top(label_jbbm_test, pred_jbbm_test)
     top1_pre,top2_pre,top3_pre=precision_top(label_jbbm_test, pred_jbbm_test)
-    r2_jbbm=calculate_r_squared(label_jbbm_test, pred_jbbm_test)
-    return [top1_recall,top2_recall,top3_recall,top1_pre,top2_pre,top3_pre,r2_jbbm]
+    #r2_jbbm=calculate_r_squared(label_jbbm_test, pred_jbbm_test)
+    return [top1_pre,top2_pre,top3_pre]

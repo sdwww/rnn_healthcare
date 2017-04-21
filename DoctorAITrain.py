@@ -12,9 +12,9 @@ def load_train_data(month):
     dataset_jbbm_train = np.load('./data_npz/dataset_jbbm_train.npz')["arr_0"]
     dataset_drug_train = np.load('./data_npz/dataset_drug_nocost_train.npz')["arr_0"]
     label_jbbm_train = np.load('./data_npz/label_jbbm_train_' + str(month) + 'month.npz')["arr_0"]
-    label_drug_train = np.load('./data_npz/label_drug_nocost_train_' + str(month) + 'month.npz')["arr_0"]
+    #label_drug_train = np.load('./data_npz/label_drug_nocost_train_' + str(month) + 'month.npz')["arr_0"]
     label_sick_train = np.load('./data_npz/label_sick_train_' + str(month) + 'month.npz')["arr_0"]
-    return dataset_jbbm_train, dataset_drug_train, label_jbbm_train, label_drug_train, label_sick_train
+    return dataset_jbbm_train, dataset_drug_train, label_jbbm_train, label_sick_train
 
 
 def train_model(
@@ -62,12 +62,12 @@ def train_model(
                   loss={'jbbm_output': 'binary_crossentropy',
                         # 'drug_output': 'binary_crossentropy',
                         'sick_output': 'binary_crossentropy'},
-                  loss_weights={'jbbm_output': 50, 'sick_output': 1})
+                  loss_weights={'jbbm_output': 100, 'sick_output': 1})
 
     # 模型可视化
     plot_model(model, to_file='./data_png/rnn_model.png', show_shapes=True)
 
-    dataset_jbbm_train, dataset_drug_train, label_jbbm_train, label_drug_train, label_sick_train = load_train_data(
+    dataset_jbbm_train, dataset_drug_train, label_jbbm_train, label_sick_train = load_train_data(
         month)
     early_stop = EarlyStopping(monitor='val_loss', patience=5)
     tensor_board = TensorBoard(log_dir='./tensor_log')
