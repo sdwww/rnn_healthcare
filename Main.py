@@ -22,18 +22,18 @@ if __name__ == '__main__':
     # cursor.close()
     # con.close()
 
-    # 训练RNN模型
-    month_list = [3, 6, 9, 12]
-    emb_list = [500,1000]
-    hidden_list = [[300, 300], [300]]
-    rnn_uint_list = ['gru', 'lstm']
-    for month in month_list:
-        for emb in emb_list:
-            for hidden in hidden_list:
-                for rnn_unit in rnn_uint_list:
-                    DoctorAITrain.train_model(month=month, max_epochs=100,
-                                              batch_size=100, emb_size=emb,
-                                              hidden_size=hidden, rnn_unit=rnn_unit)
+    # # 训练RNN模型
+    # month_list = [3, 6, 9, 12]
+    # emb_list = [500,1000]
+    # hidden_list = [[300, 300], [300]]
+    # rnn_uint_list = ['simplernn']
+    # for month in month_list:
+    #     for emb in emb_list:
+    #         for hidden in hidden_list:
+    #             for rnn_unit in rnn_uint_list:
+    #                 DoctorAITrain.train_model(month=month, max_epochs=100,
+    #                                           batch_size=100, emb_size=emb,
+    #                                           hidden_size=hidden, rnn_unit=rnn_unit)
     # # 测试RNN模型
     # month_list = [3, 6, 9, 12]
     # emb_list = [500, 1000]

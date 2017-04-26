@@ -1,11 +1,11 @@
 import numpy as np
 import DBOptions
 
-patient_num = 25098
+patient_num = 28753
 visit_num = 40
-jbbm_num = 1224
-drug_num = 1057
-jbbm_categ_num = 585
+jbbm_num = 1236
+drug_num = 1096
+jbbm_categ_num = 588
 
 
 # 创建诊断数据集

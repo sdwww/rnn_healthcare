@@ -133,8 +133,8 @@ def test_lr_jbbm(filename, month):
     pred_jbbm_test, pred_sick_test = model.predict(x=[dataset_jbbm_test, dataset_drug_test])
     # top1_recall,top2_recall,top3_recall=recall_top(label_jbbm_test, pred_jbbm_test)
     top1_pre, top2_pre, top3_pre = precision_top(label_jbbm_test, pred_jbbm_test)
-    # r2_jbbm=calculate_r_squared(label_jbbm_test, pred_jbbm_test)
-    return [top1_pre, top2_pre, top3_pre]
+    r2_jbbm=calculate_r_squared(label_jbbm_test, pred_jbbm_test)
+    return [top1_pre, top2_pre, top3_pre,r2_jbbm]
 
 
 def test_mlp_jbbm(filename, month):
@@ -144,5 +144,5 @@ def test_mlp_jbbm(filename, month):
     pred_jbbm_test, pred_sick_test = model.predict(x=[dataset_jbbm_test, dataset_drug_test])
     # top1_recall,top2_recall,top3_recall=recall_top(label_jbbm_test, pred_jbbm_test)
     top1_pre, top2_pre, top3_pre = precision_top(label_jbbm_test, pred_jbbm_test)
-    # r2_jbbm=calculate_r_squared(label_jbbm_test, pred_jbbm_test)
-    return [top1_pre, top2_pre, top3_pre]
+    r2_jbbm=calculate_r_squared(label_jbbm_test, pred_jbbm_test)
+    return [top1_pre, top2_pre, top3_pre,r2_jbbm]
