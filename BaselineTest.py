@@ -1,6 +1,6 @@
 import numpy as np
 from keras.models import load_model
-from sklearn.metrics import roc_auc_score, accuracy_score, recall_score, precision_score
+from sklearn.metrics import roc_auc_score, accuracy_score, recall_score, precision_score,f1_score
 import BaselineTrain
 import CreateDataset
 
@@ -96,6 +96,11 @@ def calculate_precision(true_vec, pred_vec):
     precision = precision_score(true_vec, pred_vec)
     return precision
 
+def calculate_fscore(true_vec, pred_vec):
+    pred_vec = pred_vec // 0.5
+    f_score = f1_score(true_vec, pred_vec)
+    return f_score
+
 
 def test_lr_sick(filename, month):
     dataset_jbbm_test, dataset_drug_test, label_jbbm_test, label_sick_test = load_test_data(month)
@@ -107,7 +112,8 @@ def test_lr_sick(filename, month):
     acc = calculate_accuracy(label_sick_test, pred_sick_test)
     precision = calculate_precision(label_sick_test, pred_sick_test)
     recall = calculate_recall(label_sick_test, pred_sick_test)
-    return [auc, acc, precision, recall]
+    f_score = calculate_fscore(label_sick_test, pred_sick_test)
+    return [auc, acc, precision, recall, f_score]
 
 
 def test_mlp_sick(filename, month):
@@ -123,7 +129,8 @@ def test_mlp_sick(filename, month):
     acc = calculate_accuracy(label_sick_test, pred_sick_test)
     precision = calculate_precision(label_sick_test, pred_sick_test)
     recall = calculate_recall(label_sick_test, pred_sick_test)
-    return [auc, acc, precision, recall]
+    f_score = calculate_fscore(label_sick_test, pred_sick_test)
+    return [auc, acc, precision, recall, f_score]
 
 
 def test_lr_jbbm(filename, month):
@@ -133,16 +140,21 @@ def test_lr_jbbm(filename, month):
     pred_jbbm_test, pred_sick_test = model.predict(x=[dataset_jbbm_test, dataset_drug_test])
     # top1_recall,top2_recall,top3_recall=recall_top(label_jbbm_test, pred_jbbm_test)
     top1_pre, top2_pre, top3_pre = precision_top(label_jbbm_test, pred_jbbm_test)
-    r2_jbbm=calculate_r_squared(label_jbbm_test, pred_jbbm_test)
-    return [top1_pre, top2_pre, top3_pre,r2_jbbm]
+    return [top1_pre, top2_pre, top3_pre]
 
 
 def test_mlp_jbbm(filename, month):
     dataset_jbbm_test, dataset_drug_test, label_jbbm_test, label_sick_test = load_test_data(month)
     model = load_model('./data_h5/' + filename)
     pred_jbbm_test, pred_sick_test = model.predict(x=[dataset_jbbm_test, dataset_drug_test])
-    pred_jbbm_test, pred_sick_test = model.predict(x=[dataset_jbbm_test, dataset_drug_test])
     # top1_recall,top2_recall,top3_recall=recall_top(label_jbbm_test, pred_jbbm_test)
     top1_pre, top2_pre, top3_pre = precision_top(label_jbbm_test, pred_jbbm_test)
-    r2_jbbm=calculate_r_squared(label_jbbm_test, pred_jbbm_test)
-    return [top1_pre, top2_pre, top3_pre,r2_jbbm]
+    return [top1_pre, top2_pre, top3_pre]
+
+def test_last_time_jbbm(month):
+    dataset_jbbm_test, dataset_drug_test, label_jbbm_test, label_sick_test = load_test_data(month)
+    for i in range(10):
+        print(np.where(dataset_jbbm_test[i]==1))
+        print(np.where(label_jbbm_test[i]==1))
+    top1_pre, top2_pre, top3_pre = precision_top(label_jbbm_test, dataset_jbbm_test)
+    return [top1_pre, top2_pre, top3_pre]

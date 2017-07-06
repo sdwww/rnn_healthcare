@@ -18,7 +18,8 @@ if __name__ == '__main__':
     # # 连接数据库
     # con = DBOptions.connect()
     # cursor = con.cursor()
-    # CreateDataset.create_dataset_drug_nocost(cursor=cursor)
+    # # CreateDataset.create_dataset_drug_nocost(cursor=cursor)
+    # PlotContent.plot_number_xh(cursor)
     # cursor.close()
     # con.close()
 
@@ -74,10 +75,17 @@ if __name__ == '__main__':
     #     #BaselineTest.test_mlp_jbbm('mlp_10epochs_' + str(i) + 'month.h5', month=i)
     # print()
 
+    #测试多层感知机模型
+    month_list = [3, 6, 9, 12]
+    for i in month_list:
+        print(BaselineTest.test_last_time_jbbm(month=i))
+        #BaselineTest.test_mlp_jbbm('mlp_10epochs_' + str(i) + 'month.h5', month=i)
+
     # # 绘制疾病预测结果
     # PlotContent.plot_sick_results()
 
-    RecordContent.record_result()
+    #RecordContent.record_result()
     #PlotContent.plot_jbbm_num()
+
 
     print('总时间:', time.clock() - start)

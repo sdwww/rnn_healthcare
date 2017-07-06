@@ -2,6 +2,7 @@ import BaselineTest
 import DoctorAITest
 import matplotlib.pyplot as plt
 import numpy as np
+import DBOptions
 
 
 def plot_sick_results():
@@ -94,3 +95,17 @@ def plot_jbbm_num():
         plt.bar(range(len(jbbm_count)), jbbm_count)
         plt.savefig('./data_png/label_jbbm_num' + str(month) + 'month.png', dpi=300)
         plt.close()
+
+
+def plot_number_xh(cursor):
+    sql = 'select count(*) as a from DATA_ANALYSIS_JBBM where XH_INDEX>0 group by grbh order by count(*)'
+    result = DBOptions.getSQL(sql, cursor)
+    max_num = np.max(result)
+    min_num = np.min(result)
+    xh_count = np.zeros([max_num - min_num + 2])
+    for i in result:
+        xh_count[i] += 1
+    print(xh_count)
+    plt.bar(range(len(xh_count)), xh_count)
+    plt.savefig('./data_png/number_xh.png', dpi=300)
+    plt.close()
