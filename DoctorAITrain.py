@@ -5,7 +5,6 @@ from keras.callbacks import History, EarlyStopping, TensorBoard
 from keras.utils.vis_utils import plot_model
 import numpy as np
 import CreateDataset
-import FileOptions
 
 
 def load_train_data(month):

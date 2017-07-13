@@ -11,7 +11,7 @@ jbbm_categ_num = 588
 # 创建诊断数据集
 def create_dataset_jbbm(cursor):
     sql = 'select grbh_index,xh_index,jbbm_index from DATA_ANALYSIS_JBBM where XH_INDEX!=0'
-    all_info = DBOptions.getSQL(sql, cursor=cursor)
+    all_info = DBOptions.get_sql(sql, cursor=cursor)
     dataset_jbbm = np.zeros((patient_num, visit_num, jbbm_num), dtype='int32')
     print('诊断数据集大小：', dataset_jbbm.shape)
     for i in all_info:
@@ -26,7 +26,7 @@ def create_dataset_jbbm(cursor):
     for i in range(len(time_list)):
         sql = "select grbh_index,jbmc_categ_index from DATA_ANALYSIS_JBBM where XH_INDEX=0 " \
               "and ZYRQ <= to_date('" + time_list[i] + " 00:00:00','yyyy-mm-dd hh24:mi:ss')"
-        all_info = DBOptions.getSQL(sql, cursor=cursor)
+        all_info = DBOptions.get_sql(sql, cursor=cursor)
         label_jbbm = np.zeros((patient_num, jbbm_categ_num), dtype='int16')
         label_sick = np.zeros((patient_num, 1), dtype='int16')
         print('诊断标签大小：', label_jbbm.shape)
@@ -52,7 +52,7 @@ def create_dataset_jbbm(cursor):
 def create_dataset_drug(cursor):
     sql = 'select grbh_index,xh_index,DRUG_INDEX,ZJEITEM from DATA_ANALYSIS_DRUG,DATA_ANALYSIS_JBBM where ' \
           'DATA_ANALYSIS_JBBM.XH =DATA_ANALYSIS_DRUG.XH AND DATA_ANALYSIS_JBBM.XH_INDEX!=0'
-    all_info = DBOptions.getSQL(sql, cursor=cursor)
+    all_info = DBOptions.get_sql(sql, cursor=cursor)
     dataset_drug_nocost = np.zeros((patient_num, visit_num, drug_num), dtype='int16')
     print('诊断数据集大小：', dataset_drug_nocost.shape)
     for i in all_info:
@@ -85,7 +85,7 @@ def create_dataset_drug(cursor):
 def create_dataset_drug_nocost(cursor):
     sql = 'select grbh_index,xh_index,DRUG_INDEX from DATA_ANALYSIS_DRUG,DATA_ANALYSIS_JBBM where ' \
           'DATA_ANALYSIS_JBBM.XH =DATA_ANALYSIS_DRUG.XH AND DATA_ANALYSIS_JBBM.XH_INDEX!=0'
-    all_info = DBOptions.getSQL(sql, cursor=cursor)
+    all_info = DBOptions.get_sql(sql, cursor=cursor)
     dataset_drug_nocost = np.zeros((patient_num, visit_num, drug_num), dtype='int16')
     print('诊断数据集大小：', dataset_drug_nocost.shape)
     for i in all_info:

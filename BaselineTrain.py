@@ -3,7 +3,6 @@ from keras.models import Model
 
 from keras.utils.vis_utils import plot_model
 import numpy as np
-import xgboost as xgb
 
 import CreateDataset
 

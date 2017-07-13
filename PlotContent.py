@@ -99,7 +99,7 @@ def plot_jbbm_num():
 
 def plot_number_xh(cursor):
     sql = 'select count(*) as a from DATA_ANALYSIS_JBBM where XH_INDEX>0 group by grbh order by count(*)'
-    result = DBOptions.getSQL(sql, cursor)
+    result = DBOptions.get_sql(sql, cursor)
     max_num = np.max(result)
     min_num = np.min(result)
     xh_count = np.zeros([max_num - min_num + 2])
