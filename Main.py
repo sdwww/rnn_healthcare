@@ -3,7 +3,6 @@ import time
 import datetime
 import numpy as np
 import DBOptions
-import FileOptions
 import CreateDataset
 import DoctorAITrain
 import DoctorAITest

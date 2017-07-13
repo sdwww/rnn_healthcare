@@ -6,7 +6,6 @@ from openpyxl import load_workbook
 os.environ['NLS_LANG'] = 'SIMPLIFIED CHINESE_CHINA.ZHS16GBK'
 import cx_Oracle as db
 import numpy as np
-import FileOptions
 np.random.seed(1234)
 
 # 连接数据库

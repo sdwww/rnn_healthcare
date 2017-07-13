@@ -153,8 +153,5 @@ def test_mlp_jbbm(filename, month):
 
 def test_last_time_jbbm(month):
     dataset_jbbm_test, dataset_drug_test, label_jbbm_test, label_sick_test = load_test_data(month)
-    for i in range(10):
-        print(np.where(dataset_jbbm_test[i]==1))
-        print(np.where(label_jbbm_test[i]==1))
     top1_pre, top2_pre, top3_pre = precision_top(label_jbbm_test, dataset_jbbm_test)
     return [top1_pre, top2_pre, top3_pre]
