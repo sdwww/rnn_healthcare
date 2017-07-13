@@ -1,5 +1,7 @@
+import time
+
 import BaselineTest
-import DoctorAITest
+import ModelTest
 import matplotlib.pyplot as plt
 import numpy as np
 import DBOptions
@@ -12,17 +14,17 @@ def plot_sick_results():
     # # 测试RNN模型
     month_list = [3, 6, 9, 12]
     for i in month_list:
-        model_result = DoctorAITest.test_model_sick('rnn1_500emb_[300]hidden__gru_20epochs_' + str(i) + 'month.h5',
-                                                    month=3)
+        model_result = ModelTest.test_model_probability('rnn1_500emb_[300]hidden__gru_20epochs_' + str(i) + 'month.h5',
+                                                        month=3)
         model_results.append(model_result)
     # 测试逻辑回归模型
     for i in month_list:
-        lr_result = BaselineTest.test_lr_sick('lr_10epochs_' + str(i) + 'month.h5', month=3)
+        lr_result = BaselineTest.test_probability('lr_10epochs_' + str(i) + 'month.h5', month=3)
         lr_results.append(lr_result)
 
     # 测试多层感知机模型
     for i in month_list:
-        mlp_result = BaselineTest.test_mlp_sick('mlp_10epochs_' + str(i) + 'month.h5', month=3)
+        mlp_result = BaselineTest.test_probability('mlp_10epochs_' + str(i) + 'month.h5', month=3)
         mlp_results.append(mlp_result)
     model_results = np.asarray(model_results)
     lr_results = np.asarray(lr_results)
@@ -109,3 +111,18 @@ def plot_number_xh(cursor):
     plt.bar(range(len(xh_count)), xh_count)
     plt.savefig('./data_png/number_xh.png', dpi=300)
     plt.close()
+
+
+if __name__ == '__main__':
+    start = time.clock()
+    # 连接数据库
+    con = DBOptions.db_connect()
+    cursor = con.cursor()
+    plot_number_xh(cursor)
+    cursor.close()
+    con.close()
+
+    # 绘制疾病预测结果
+    plot_sick_results()
+
+    print('总时间:', time.clock() - start)

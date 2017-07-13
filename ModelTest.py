@@ -4,16 +4,6 @@ from sklearn.metrics import roc_auc_score, accuracy_score, recall_score, precisi
 import DatasetProcess
 
 
-def load_data(month):
-    test_info, test_disease, test_drug, test_label_probability, test_label_disease \
-        = DatasetProcess.load_train_data(month)
-    test_disease = test_disease[:, -1, :].reshape(int(DatasetProcess.patient_num * DatasetProcess.test_ratio),
-                                                  DatasetProcess.disease_num)
-    test_drug = test_drug[:, -1, :].reshape(int(DatasetProcess.patient_num * DatasetProcess.test_ratio),
-                                            DatasetProcess.drug_num)
-    return test_info, test_disease, test_drug, test_label_probability, test_label_disease
-
-
 def recall_top(y_true, y_predict, rank=None):
     if rank is None:
         rank = [1, 2, 3]
@@ -97,10 +87,11 @@ def calculate_f1score(true_vec, predict_vec):
     return f_score
 
 
-def test_probability(filename, month):
-    test_info, test_disease, test_drug, test_label_probability, test_label_disease = load_data(month)
+def test_model_probability(filename, month):
+    test_info, test_disease, test_drug, test_label_probability, test_label_disease \
+        = DatasetProcess.load_test_data(month)
     model = load_model('./data_h5/' + filename)
-    predict_probability_test, predict_disease_test, = model.predict(x=[test_disease, test_drug])
+    predict_disease_test, predict_probability_test = model.predict(x=[test_disease, test_drug])
     auc = calculate_auc(test_label_probability, predict_probability_test)
     acc = calculate_accuracy(test_label_probability, predict_probability_test)
     precision = calculate_precision(test_label_probability, predict_probability_test)
@@ -109,32 +100,27 @@ def test_probability(filename, month):
     return [auc, acc, precision, recall, f_score]
 
 
-def test_disease(filename, month):
-    test_info, test_disease, test_drug, test_label_probability, test_label_disease = load_data(month)
+def test_model_disease(filename, month):
+    test_info, test_disease, test_drug, test_label_probability, test_label_disease \
+        = DatasetProcess.load_test_data(month)
     model = load_model('./data_h5/' + filename)
     predict_probability_test, predict_disease_test = model.predict(x=[test_disease, test_drug])
     top1_pre, top2_pre, top3_pre = precision_top(test_label_disease, predict_disease_test)
     return [top1_pre, top2_pre, top3_pre]
 
 
-def test_last_time_jbbm(month):
-    test_info, test_disease, test_drug, test_label_probability, test_label_disease = load_data(month)
-    top1_pre, top2_pre, top3_pre = precision_top(test_label_disease, test_disease)
-    return [top1_pre, top2_pre, top3_pre]
-
-
 if __name__ == "__main__":
+    # 测试RNN模型
     month_list = [3, 6, 9, 12]
-    # 测试逻辑回归模型
-    for i in month_list:
-        print(test_probability('lr_10epochs_' + str(i) + 'month.h5', month=i))
-        print(test_disease('lr_10epochs_' + str(i) + 'month.h5', month=i))
-
-    # 测试多层感知机模型
-    for i in month_list:
-        print(test_probability('mlp_10epochs_' + str(i) + 'month.h5', month=i))
-        print(test_disease('mlp_10epochs_' + str(i) + 'month.h5', month=i))
-
-    # 测试最后一次
-    for i in month_list:
-        print(test_last_time_jbbm(month=i))
+    emb_list = [500, 1000]
+    hidden_list = [[300, 300], [300]]
+    rnn_unit_list = ['gru', 'lstm']
+    for month in month_list:
+        for emb in emb_list:
+            for hidden in hidden_list:
+                for rnn_unit in rnn_unit_list:
+                    file_name = 'rnn' + str(len(hidden)) + '_' + str(emb) + 'emb_' + str(hidden) \
+                                + 'hidden_' + '_' + rnn_unit + '_' + str(20) + 'epochs_' + str(
+                        month) + 'month'
+                    print(file_name)
+                    test_model_disease(file_name + '.h5', month=month)

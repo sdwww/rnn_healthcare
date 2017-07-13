@@ -1,12 +1,8 @@
 import os
-import datetime
-
-from openpyxl import load_workbook
 
 os.environ['NLS_LANG'] = 'SIMPLIFIED CHINESE_CHINA.ZHS16GBK'
 import cx_Oracle as db
-import numpy as np
-np.random.seed(1234)
+
 
 # 连接数据库
 def db_connect():
@@ -28,7 +24,7 @@ def get_sql(sql, cursor):
 
 
 # 执行更新操作
-def exeSQL(sql, cursor, con):
+def exe_sql(sql, cursor, con):
     cursor.execute(sql)
     con.commit()
     return 1
