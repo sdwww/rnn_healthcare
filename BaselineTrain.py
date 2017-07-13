@@ -7,9 +7,9 @@ import DatasetProcess
 def load_data(month):
     train_info, train_disease, train_drug, train_label_probability, train_label_disease \
         = DatasetProcess.load_train_data(month)
-    train_disease = train_disease[:, -1, :].reshape(int(DatasetProcess.patient_num * DatasetProcess.test_ratio),
+    train_disease = train_disease[:, -1, :].reshape(int(DatasetProcess.patient_num * (1 - DatasetProcess.test_ratio)),
                                                     DatasetProcess.disease_num)
-    train_drug = train_drug[:, -1, :].reshape(int(DatasetProcess.patient_num * DatasetProcess.test_ratio),
+    train_drug = train_drug[:, -1, :].reshape(int(DatasetProcess.patient_num * (1 - DatasetProcess.test_ratio)),
                                               DatasetProcess.drug_num)
     return train_info, train_disease, train_drug, train_label_probability, train_label_disease
 
@@ -25,7 +25,7 @@ def train_lr(month=3, max_epochs=10, batch_size=100):
     model.compile(optimizer='rmsprop',
                   loss={'probability_output': 'binary_crossentropy', 'disease_output': 'binary_crossentropy'},
                   loss_weights={'probability_output': 1, 'disease_output': 100})
-    train_info, train_disease, train_drug, train_label_disease, train_label_probability = load_data(month)
+    train_info, train_disease, train_drug, train_label_probability, train_label_disease, = load_data(month)
     model.fit(x=[train_disease, train_drug], y=[train_label_probability, train_label_disease],
               epochs=max_epochs, batch_size=batch_size, validation_split=0.2)
     model.save('./data_h5/lr_' + str(max_epochs) + 'epochs_' + str(month) + 'month.h5')

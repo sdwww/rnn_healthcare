@@ -1,4 +1,3 @@
-import numpy as np
 from keras.callbacks import EarlyStopping, TensorBoard
 from keras.layers import Input, Dense, concatenate, GRU, Dropout, LSTM, SimpleRNN
 from keras.models import Model
@@ -9,6 +8,7 @@ import DatasetProcess
 def train_model(
         emb_size=500,
         hidden_size=None,
+        hidden_info=20,
         batch_size=100,
         max_epochs=10,
         rnn_unit='gru',
@@ -16,6 +16,8 @@ def train_model(
         month=3):
     disease_input = Input(shape=(DatasetProcess.visit_num, DatasetProcess.disease_num), name='disease_input')
     drug_input = Input(shape=(DatasetProcess.visit_num, DatasetProcess.drug_num), name='drug_input')
+    info_input = Input(shape=(DatasetProcess.info_num,), name='info_input')
+    info_embed = Dense(hidden_info, activation='relu', name='info_embed')(info_input)
     code_input = concatenate([disease_input, drug_input])
     embed_layer = Dense(units=emb_size, activation='tanh')(code_input)
     if len(hidden_size) == 2 and rnn_unit == 'gru':
@@ -23,44 +25,50 @@ def train_model(
         dropout_1 = Dropout(rate=dropout_rate)(gru_1)
         gru_2 = GRU(units=hidden_size[1], return_sequences=False)(dropout_1)
         dropout_2 = Dropout(rate=dropout_rate)(gru_2)
+        output = concatenate([dropout_2, info_embed])
         disease_output = Dense(DatasetProcess.disease_category_num, activation='softmax',
-                               name='disease_output')(dropout_2)
-        probability_output = Dense(1, activation='sigmoid', name='probability_output')(dropout_2)
+                               name='disease_output')(output)
+        probability_output = Dense(1, activation='sigmoid', name='probability_output')(output)
     elif len(hidden_size) == 1 and rnn_unit == 'gru':
         gru_1 = GRU(units=hidden_size[0], return_sequences=False)(embed_layer)
         dropout_1 = Dropout(rate=dropout_rate)(gru_1)
+        output = concatenate([dropout_1, info_embed])
         disease_output = Dense(DatasetProcess.disease_category_num, activation='softmax',
-                               name='disease_output')(dropout_1)
-        probability_output = Dense(1, activation='sigmoid', name='probability_output')(dropout_1)
+                               name='disease_output')(output)
+        probability_output = Dense(1, activation='sigmoid', name='probability_output')(output)
     elif len(hidden_size) == 2 and rnn_unit == 'lstm':
         lstm_1 = LSTM(units=hidden_size[0], return_sequences=True)(embed_layer)
         dropout_1 = Dropout(rate=dropout_rate)(lstm_1)
         lstm_2 = LSTM(units=hidden_size[1], return_sequences=False)(dropout_1)
         dropout_2 = Dropout(rate=dropout_rate)(lstm_2)
+        output = concatenate([dropout_2, info_embed])
         disease_output = Dense(DatasetProcess.disease_category_num, activation='softmax',
-                               name='disease_output')(dropout_2)
-        probability_output = Dense(1, activation='sigmoid', name='probability_output')(dropout_2)
+                               name='disease_output')(output)
+        probability_output = Dense(1, activation='sigmoid', name='probability_output')(output)
     elif len(hidden_size) == 1 and rnn_unit == 'lstm':
         lstm_1 = LSTM(units=hidden_size[0], return_sequences=False)(embed_layer)
         dropout_1 = Dropout(rate=dropout_rate)(lstm_1)
+        output = concatenate([dropout_1, info_embed])
         disease_output = Dense(DatasetProcess.disease_category_num, activation='softmax',
-                               name='disease_output')(dropout_1)
-        probability_output = Dense(1, activation='sigmoid', name='probability_output')(dropout_1)
+                               name='disease_output')(output)
+        probability_output = Dense(1, activation='sigmoid', name='probability_output')(output)
     elif len(hidden_size) == 2 and rnn_unit == 'simplernn':
         lstm_1 = SimpleRNN(units=hidden_size[0], return_sequences=True)(embed_layer)
         dropout_1 = Dropout(rate=dropout_rate)(lstm_1)
         lstm_2 = SimpleRNN(units=hidden_size[1], return_sequences=False)(dropout_1)
         dropout_2 = Dropout(rate=dropout_rate)(lstm_2)
-        disease_output = Dense(DatasetProcess.disease_category_num, activation='softmax', name='disease_output')(
-            dropout_2)
-        probability_output = Dense(1, activation='sigmoid', name='probability_output')(dropout_2)
+        output = concatenate([dropout_2, info_embed])
+        disease_output = Dense(DatasetProcess.disease_category_num, activation='softmax',
+                               name='disease_output')(output)
+        probability_output = Dense(1, activation='sigmoid', name='probability_output')(output)
     else:
         lstm_1 = SimpleRNN(units=hidden_size[0], return_sequences=False)(embed_layer)
         dropout_1 = Dropout(rate=dropout_rate)(lstm_1)
-        disease_output = Dense(DatasetProcess.disease_category_num, activation='softmax', name='disease_output')(
-            dropout_1)
-        probability_output = Dense(1, activation='sigmoid', name='probability_output')(dropout_1)
-    model = Model(inputs=[disease_input, drug_input], outputs=[probability_output, disease_output])
+        output = concatenate([dropout_1, info_embed])
+        disease_output = Dense(DatasetProcess.disease_category_num, activation='softmax',
+                               name='disease_output')(output)
+        probability_output = Dense(1, activation='sigmoid', name='probability_output')(output)
+    model = Model(inputs=[info_input, disease_input, drug_input], outputs=[probability_output, disease_output])
     model.compile(optimizer='rmsprop',
                   loss={'disease_output': 'binary_crossentropy',
                         'probability_output': 'binary_crossentropy'},
@@ -69,12 +77,12 @@ def train_model(
         = DatasetProcess.load_train_data(month)
     early_stop = EarlyStopping(monitor='val_loss', patience=5)
     tensor_board = TensorBoard(log_dir='./tensor_log')
-    model.fit(x=[train_disease, train_drug], y=[train_label_probability, train_label_disease],
+    model.fit(x=[train_info, train_disease, train_drug], y=[train_label_probability, train_label_disease],
               epochs=max_epochs, batch_size=batch_size, validation_split=0.2,
               callbacks=[early_stop, tensor_board])
     file_name = 'rnn' + str(len(hidden_size)) + '_' + str(emb_size) + 'emb_' + str(hidden_size) \
                 + 'hidden_' + '_' + rnn_unit + '_' + str(20) + 'epochs_' + str(month) + 'month'
-    model.save('./data_h5/' + file_name + '.h5')
+    model.save('./data_h5/' + file_name + '_info.h5')
 
 
 if __name__ == "__main__":

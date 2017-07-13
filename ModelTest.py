@@ -64,25 +64,25 @@ def calculate_auc(true_vec, predict_vec):
 
 
 def calculate_recall(true_vec, predict_vec):
-    predict_vec = predict_vec // 0.5
+    predict_vec = predict_vec // (0.5 + 1e-3)
     recall = recall_score(true_vec, predict_vec)
     return recall
 
 
 def calculate_accuracy(true_vec, predict_vec):
-    predict_vec = predict_vec // 0.5
+    predict_vec = predict_vec // (0.5 + 1e-3)
     recall = accuracy_score(true_vec, predict_vec)
     return recall
 
 
 def calculate_precision(true_vec, predict_vec):
-    predict_vec = predict_vec // 0.5
+    predict_vec = predict_vec // (0.5 + 1e-3)
     precision = precision_score(true_vec, predict_vec)
     return precision
 
 
 def calculate_f1score(true_vec, predict_vec):
-    predict_vec = predict_vec // 0.5
+    predict_vec = predict_vec // (0.5 + 1e-3)
     f_score = f1_score(true_vec, predict_vec)
     return f_score
 
@@ -91,7 +91,7 @@ def test_model_probability(filename, month):
     test_info, test_disease, test_drug, test_label_probability, test_label_disease \
         = DatasetProcess.load_test_data(month)
     model = load_model('./data_h5/' + filename)
-    predict_disease_test, predict_probability_test = model.predict(x=[test_disease, test_drug])
+    predict_probability_test, predict_disease_test = model.predict(x=[test_disease, test_drug])
     auc = calculate_auc(test_label_probability, predict_probability_test)
     acc = calculate_accuracy(test_label_probability, predict_probability_test)
     precision = calculate_precision(test_label_probability, predict_probability_test)

@@ -11,6 +11,7 @@ visit_num = 40
 disease_num = 1236
 drug_num = 1096
 disease_category_num = 588
+info_num=4
 split_rate = 0.85
 test_ratio = 0.2
 
