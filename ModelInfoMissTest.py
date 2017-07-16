@@ -91,7 +91,7 @@ def test_model_probability(filename, month):
     test_info, test_disease, test_drug, test_label_probability, test_label_disease \
         = DatasetProcess.load_test_data(month)
     model = load_model('./data_h5/' + filename)
-    predict_probability_test, predict_disease_test, = model.predict(x=[test_info[:, ::2], test_disease, test_drug])
+    predict_probability_test, predict_disease_test, = model.predict(x=[test_info, test_disease, test_drug])
     auc = calculate_auc(test_label_probability, predict_probability_test)
     acc = calculate_accuracy(test_label_probability, predict_probability_test)
     precision = calculate_precision(test_label_probability, predict_probability_test)
@@ -104,7 +104,7 @@ def test_model_disease(filename, month):
     test_info, test_disease, test_drug, test_label_probability, test_label_disease \
         = DatasetProcess.load_test_data(month)
     model = load_model('./data_h5/' + filename)
-    predict_probability_test, predict_disease_test = model.predict(x=[test_info[:, ::2], test_disease, test_drug])
+    predict_probability_test, predict_disease_test = model.predict(x=[test_info, test_disease, test_drug])
     top1_pre, top2_pre, top3_pre = precision_top(test_label_disease, predict_disease_test)
     return [top1_pre, top2_pre, top3_pre]
 

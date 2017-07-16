@@ -16,7 +16,7 @@ def train_model(
         month=3):
     disease_input = Input(shape=(DatasetProcess.visit_num, DatasetProcess.disease_num), name='disease_input')
     drug_input = Input(shape=(DatasetProcess.visit_num, DatasetProcess.drug_num), name='drug_input')
-    info_input = Input(shape=(DatasetProcess.info_num // 2,), name='info_input')
+    info_input = Input(shape=(DatasetProcess.info_num,), name='info_input')
     info_embed = Dense(hidden_info, activation='relu', name='info_embed')(info_input)
     code_input = concatenate([disease_input, drug_input])
     embed_layer = Dense(units=emb_size, activation='tanh')(code_input)
@@ -68,8 +68,7 @@ def train_model(
         disease_output = Dense(DatasetProcess.disease_category_num, activation='softmax',
                                name='disease_output')(output)
         probability_output = Dense(1, activation='sigmoid', name='probability_output')(output)
-    model = Model(inputs=[info_input, disease_input, drug_input],
-                  outputs=[probability_output, disease_output])
+    model = Model(inputs=[info_input, disease_input, drug_input], outputs=[probability_output, disease_output])
     model.compile(optimizer='rmsprop',
                   loss={'disease_output': 'binary_crossentropy',
                         'probability_output': 'binary_crossentropy'},
@@ -78,12 +77,12 @@ def train_model(
         = DatasetProcess.load_train_data(month)
     early_stop = EarlyStopping(monitor='val_loss', patience=5)
     tensor_board = TensorBoard(log_dir='./tensor_log')
-    model.fit(x=[train_info[:, ::2], train_disease, train_drug], y=[train_label_probability, train_label_disease],
+    model.fit(x=[train_info, train_disease, train_drug], y=[train_label_probability, train_label_disease],
               epochs=max_epochs, batch_size=batch_size, validation_split=0.2,
               callbacks=[early_stop, tensor_board])
     file_name = 'rnn' + str(len(hidden_size)) + '_' + str(emb_size) + 'emb_' + str(hidden_size) \
                 + 'hidden_' + '_' + rnn_unit + '_' + str(20) + 'epochs_' + str(month) + 'month'
-    model.save('./data_h5/' + file_name + '_info.h5')
+    model.save('./data_h5/' + file_name + '_info_miss.h5')
 
 
 if __name__ == "__main__":

@@ -7,9 +7,9 @@ import DatasetProcess
 def load_data(month):
     test_info, test_disease, test_drug, test_label_probability, test_label_disease \
         = DatasetProcess.load_test_data(month)
-    test_disease = test_disease[:, -1, :].reshape(int(DatasetProcess.patient_num * DatasetProcess.test_ratio),
+    test_disease = test_disease[:, -1, :].reshape(int(DatasetProcess.patient_num * DatasetProcess.test_ratio) + 1,
                                                   DatasetProcess.disease_num)
-    test_drug = test_drug[:, -1, :].reshape(int(DatasetProcess.patient_num * DatasetProcess.test_ratio),
+    test_drug = test_drug[:, -1, :].reshape(int(DatasetProcess.patient_num * DatasetProcess.test_ratio) + 1,
                                             DatasetProcess.drug_num)
     return test_info, test_disease, test_drug, test_label_probability, test_label_disease
 
